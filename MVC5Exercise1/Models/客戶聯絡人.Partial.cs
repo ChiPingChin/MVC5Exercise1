@@ -3,7 +3,10 @@ namespace MVC5Exercise1.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-    
+
+    // 正規表示式參考網址
+    // https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Regular_Expressions
+
     [MetadataType(typeof(客戶聯絡人MetaData))]
     public partial class 客戶聯絡人
     {
