@@ -28,8 +28,9 @@ namespace MVC5Exercise1.Models
         [StringLength(250, MinimumLength =6, ErrorMessage="欄位長度不得大於 250 個字元")]
         [Required]
         public string Email { get; set; }
-        
-        [RegularExpression(@"^09\d{2}-?\d{3}-?\d{3}$",ErrorMessage ="請輸入正確手機號碼 09xx-xxx-xxx")]
+
+        //[RegularExpression(@"^09\d{2}-?\d{3}-?\d{3}$",ErrorMessage ="請輸入正確手機號碼 09xx-xxx-xxx")]
+        [RegularExpression(@"^\d{4}-\d{6}$", ErrorMessage = "請輸入正確手機號碼 0911-111111")]
         [StringLength(50, ErrorMessage="欄位長度不得大於 50 個字元")]
         public string 手機 { get; set; }
         
