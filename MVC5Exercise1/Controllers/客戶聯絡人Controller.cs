@@ -48,17 +48,52 @@ namespace MVC5Exercise1.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        //public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Create(客戶聯絡人 客戶聯絡人)
         {
             if (ModelState.IsValid)
             {
-                db.客戶聯絡人.Add(客戶聯絡人);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (EmailIsDuplicate(客戶聯絡人.客戶Id, 客戶聯絡人.Email))
+                {
+                    // http://blog.miniasp.com/post/2016/03/14/ASPNET-MVC-Developer-Note-Part-28-Understanding-ModelState.aspx
+                    // https://www.codeproject.com/Questions/633509/ModelState-AddModelError-dosent-show-error
+                    ModelState.AddModelError("Email", "Email 不能重複");
+                    //ModelState.Remove("Id");
+                    //ViewData["客戶Id"] = new List<SelectListItem>() { new SelectListItem() { Text ="多奇數位" , Value= 客戶聯絡人 .客戶Id.ToString()} };
+                    ViewData["客戶Id"] = GetSelectListItem(客戶聯絡人.客戶Id);
+                    return View();
+                }
+                else  // Email 重複
+                {
+                    db.客戶聯絡人.Add(客戶聯絡人);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }                
             }
 
             ViewBag.客戶Id = new SelectList(db.客戶資料, "Id", "客戶名稱", 客戶聯絡人.客戶Id);
             return View(客戶聯絡人);
+        }
+
+        // 檢查同一客戶下的聯絡人 Email 是否重複
+        private bool EmailIsDuplicate(int cid, string email)
+        {
+            return db.客戶聯絡人.ToList().Where(x => x.客戶Id == cid && x.Email.ToUpper() == email.ToUpper()).Any();
+        }
+
+        // 取得客戶資料選項
+        private List<SelectListItem> GetSelectListItem(int CustomerId)
+        {
+            List<SelectListItem> selectItemList =   db.客戶資料.ToList().Select(
+                                                                                x =>  new SelectListItem() {
+                                                                                    Text = x.客戶名稱,
+                                                                                    Value = x.Id.ToString()                    
+                                                                                }).Distinct().ToList();
+
+            var selectedItem = selectItemList.Where(c => c.Value == CustomerId.ToString()).First();
+            selectedItem.Selected = true;
+
+            return selectItemList;
         }
 
         // GET: 客戶聯絡人/Edit/5
