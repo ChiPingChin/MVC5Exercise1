@@ -20,10 +20,52 @@ namespace MVC5Exercise1.Controllers
             // 一次查出全部資料丟給 View 去呈現
             //return View(db.客戶資料.ToList());
 
+            // 註解掉：因一開始不需要撈出所有客戶資料，應該是空白頁面，輸入篩選條件查詢才有結果
             // 使用 AsQueryable()，延遲查詢(在執行 View 的 Foreach 中才會真的去資料庫查詢，效能較佳)
-            var result = db.客戶資料.Where(c => c.是否已刪除 == false).AsQueryable();
-            
-            return View(result);
+            //var result = db.客戶資料.Where(c => c.是否已刪除 == false).AsQueryable();            
+            //return View(result);
+
+            // 註記目前是沒有資料
+            ViewBag.HasData = false; 
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Search(string 客戶名稱)
+        {
+            IEnumerable<客戶資料> result = null;
+
+            // 註記目前是有在做查詢資料
+            ViewBag.IsSearching = true;
+
+            // 如果未輸入，打回重新輸入
+            if (string.IsNullOrEmpty(客戶名稱))
+            {
+                ModelState.AddModelError("", "請輸入查詢條件：客戶名稱");
+            }
+            else // 有輸入條件，執行查詢作業
+            {
+                result = db.客戶資料
+                    .Where(c => c.是否已刪除 == false 
+                           && 
+                           c.客戶名稱.ToUpper().Contains(客戶名稱.Trim().ToUpper()))
+                    .ToList();
+
+                if (result.Count() > 0)
+                {
+                    // 註記目前是有資料
+                    ViewBag.HasData = true;
+                }
+                else
+                {
+                    // 註記目前是沒有資料
+                    ViewBag.HasData = false;
+                }
+            }
+
+            //  指定回傳到 Index 查詢頁面，以顯示結果
+            return View("Index",result);
         }
 
         // GET: 客戶資料/Details/5

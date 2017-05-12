@@ -4,60 +4,114 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<script type="text/javascript">
+
+
+    // 檢查是否有輸入客戶名稱查詢條件
+    function ValidateInput()
+    {
+        var customerName = document.getElementById("客戶名稱").value;
+        if (customerName === '' || customerName === null)
+        {
+            document.getElementById("alertMsg").innerHTML = "請輸入客戶名稱";
+            return false;
+        }
+        else
+        {            
+            document.getElementById("alertMsg").innerHTML = "";
+            return true;
+        }
+    }    
+    
+
+</script>
+
+<h2>查詢客戶資料</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.客戶名稱)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.統一編號)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.電話)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.傳真)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.地址)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Email)
-        </th>
-        <th></th>
-    </tr>
+<div class="input-group">
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.客戶名稱)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.統一編號)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.電話)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.傳真)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.地址)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Email)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
+    @*ASP.NET MVC 使用 Html.BeginForm 預設多載引發的問題*@
+    @*http://blog.miniasp.com/post/2012/12/03/ASPNET-MVC-Html-Helper-BeginForm-default-overload-problem.aspx*@
+
+    <form action="/客戶資料/Search" method="post"  onsubmit="return ValidateInput();">
+        <label for="客戶名稱">請輸入客戶名稱：</label>
+        <input id="客戶名稱" name="客戶名稱" type="text" value="" />
+        <input type="submit" />
+        <div id="alertMsg" class="alertMsg"></div>        
+    </form>
+
+</div>
+
+<br />
+
+@if (ViewBag.HasData)
+{
+    <script>
+        GetCustomerNameQuery();
+    </script>
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.客戶名稱)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.統一編號)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.電話)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.傳真)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.地址)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.客戶名稱)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.統一編號)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.電話)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.傳真)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.地址)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+
+    </table>
+
 }
 
-</table>
+@if(ViewBag.IsSearching != null && !ViewBag.HasData)
+{
+    <hr />
+	<div class="alert-info">查無該客戶名稱資料</div>     
+}
+
